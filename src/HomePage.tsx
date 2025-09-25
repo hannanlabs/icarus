@@ -7,24 +7,23 @@ interface HomePageProps {
 export default function HomePage({ onCircleClick }: HomePageProps) {
   return (
     <div className="bg-[#d9d9d9] relative w-[360px] h-[500px]">
-      <p className="absolute font-inter font-normal leading-normal left-[53px] not-italic text-[23px] text-black text-nowrap top-[73px] whitespace-pre">
+      <p className="absolute font-inknut-antiqua leading-normal left-[35px] not-italic text-[30px] text-black text-nowrap top-[48px] whitespace-pre">
         Welcome @hannanlabs
       </p>
-      <div className="absolute bg-[#ca3333] h-[64px] left-[21px] rounded-[39px] top-[147px] w-[318px]" />
-      <p className="absolute font-sans leading-normal left-[43px] not-italic text-[18px] text-nowrap text-white top-[168px] whitespace-pre">
-        Press to parse profile for input data
-      </p>
-      <p className="absolute font-inter font-normal leading-normal left-[97px] not-italic text-[18px] text-black text-nowrap top-[257px] whitespace-pre">
-        Tweet Viral Score :
+      <p className="absolute font-inknut-antiqua leading-normal left-[65px] not-italic text-[30px] text-black text-nowrap top-[132px] whitespace-pre">
+        Tweet Viral Score
       </p>
       <div
-        className="absolute h-[153px] left-[102px] top-[314px] w-[155px] cursor-pointer"
+        className="absolute h-[208px] left-[65px] top-[210px] w-[209px] cursor-pointer"
         onClick={onCircleClick}
       >
-        <img alt="" className="block max-w-none w-full h-full" src={circleIcon} />
+        <img alt="" className="block max-w-none size-full" src={circleIcon} />
       </div>
-      <p className="absolute font-inter font-normal leading-normal left-[147px] not-italic text-[18px] text-nowrap text-white top-[380px] whitespace-pre">
+      <p className="absolute font-inter font-extrabold leading-normal left-[123px] not-italic text-[30px] text-black text-nowrap top-[300px] whitespace-pre">
         79/100
+      </p>
+      <p className="absolute font-inter font-extrabold leading-normal left-[266px] not-italic text-[30px] text-black text-nowrap top-[459px] whitespace-pre">
+        Setup
       </p>
     </div>
   );
