@@ -22,7 +22,7 @@ export default function App() {
     <>
       {currentPage === 'home' && <HomePage onCircleClick={handleCircleClick} onSetupClick={handleSetupClick} />}
       {currentPage === 'metrics' && <MetricsPage onGoBack={handleBackToHome} />}
-      {currentPage === 'settings' && <SettingsPage />}
+      {currentPage === 'settings' && <SettingsPage onGoBack={handleBackToHome} />}
     </>
   );
 }
