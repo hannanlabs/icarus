@@ -4,7 +4,19 @@
   "version": "0.0.1",
   "description": "Icarus Chrome Extension",
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "icarus.png",
+      "32": "icarus.png",
+      "48": "icarus.png",
+      "128": "icarus.png"
+    }
+  },
+  "icons": {
+    "16": "icarus.png",
+    "32": "icarus.png",
+    "48": "icarus.png",
+    "128": "icarus.png"
   },
   "permissions": [],
   "host_permissions": []
