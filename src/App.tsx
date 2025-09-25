@@ -16,7 +16,7 @@ export default function App() {
   return (
     <>
       {currentPage === 'home' && <HomePage onCircleClick={handleCircleClick} />}
-      {currentPage === 'metrics' && <MetricsPage />}
+      {currentPage === 'metrics' && <MetricsPage onGoBack={handleBackToHome} />}
     </>
   );
 }

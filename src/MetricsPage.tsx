@@ -1,4 +1,4 @@
-export default function MetricsPage() {
+export default function MetricsPage({ onGoBack }: { onGoBack: () => void }) {
   return (
     <div className="bg-[#d9d9d9] relative w-[360px] h-[500px]">
       <p className="absolute font-inter font-semibold leading-normal left-[175.5px] not-italic text-[20px] text-black text-center text-nowrap top-[26px] translate-x-[-50%] whitespace-pre">
@@ -38,6 +38,12 @@ export default function MetricsPage() {
         </p>
         <div className="absolute bg-white h-[33px] left-[27px] top-[442px] w-[282px]" />
         <div className="absolute bg-[#ca3333] h-[33px] left-[27px] top-[442px] w-[235px]" />
+      </div>
+      <div
+        className="absolute left-[8px] top-[20px] cursor-pointer text-black text-[24px] hover:text-gray-600"
+        onClick={onGoBack}
+      >
+        ←
       </div>
     </div>
   );
