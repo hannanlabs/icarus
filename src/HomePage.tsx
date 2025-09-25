@@ -22,9 +22,16 @@ export default function HomePage({ onCircleClick }: HomePageProps) {
       <p className="absolute font-inter font-extrabold leading-normal left-[123px] not-italic text-[30px] text-black text-nowrap top-[300px] whitespace-pre">
         79/100
       </p>
-      <p className="absolute font-inter font-extrabold leading-normal left-[266px] not-italic text-[30px] text-black text-nowrap top-[459px] whitespace-pre">
-        Setup
-      </p>
+      <div className="absolute left-[235px] top-[445px] w-[110px] h-[55px] bg-gradient-to-br from-gray-800 to-black rounded-xl shadow-lg flex items-center justify-center cursor-pointer hover:scale-105 transition-all duration-200 hover:shadow-xl">
+        <p className="font-inter font-bold text-[24px] text-white">
+          Setup
+        </p>
+      </div>
+      <div className="absolute left-[15px] top-[445px] w-[110px] h-[55px] bg-gradient-to-br from-gray-800 to-black rounded-xl shadow-lg flex items-center justify-center cursor-pointer hover:scale-105 transition-all duration-200 hover:shadow-xl">
+        <p className="font-inter font-bold text-[24px] text-white">
+          Calculate
+        </p>
+      </div>
     </div>
   );
 }
