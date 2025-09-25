@@ -1,26 +1,106 @@
+import { useState, useEffect } from 'react';
+
 export default function SettingsPage({ onGoBack }: { onGoBack: () => void }) {
+  const [apiKey, setApiKey] = useState('');
+  const [twitterUsername, setTwitterUsername] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [apiKeySaved, setApiKeySaved] = useState(false);
+  const [twitterSaved, setTwitterSaved] = useState(false);
+
+  useEffect(() => {
+    // Load saved data when component mounts
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      chrome.storage.sync.get(['llmApiKey', 'twitterUsername'], (result) => {
+        setApiKey(result.llmApiKey || '');
+        setTwitterUsername(result.twitterUsername || '');
+        setIsLoading(false);
+      });
+    } else {
+      // Fallback for development mode when chrome APIs aren't available
+      console.log('Chrome storage not available (development mode)');
+      setIsLoading(false);
+    }
+  }, []);
+
+  const handleSaveApiKey = () => {
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      chrome.storage.sync.set({ llmApiKey: apiKey }, () => {
+        console.log('API Key saved');
+        setApiKeySaved(true);
+        setTimeout(() => setApiKeySaved(false), 2000);
+      });
+    } else {
+      // Fallback for development mode
+      console.log('API Key saved (development mode):', apiKey);
+      setApiKeySaved(true);
+      setTimeout(() => setApiKeySaved(false), 2000);
+    }
+  };
+
+  const handleSaveTwitterUsername = () => {
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      chrome.storage.sync.set({ twitterUsername: twitterUsername }, () => {
+        console.log('Twitter Username saved');
+        setTwitterSaved(true);
+        setTimeout(() => setTwitterSaved(false), 2000);
+      });
+    } else {
+      // Fallback for development mode
+      console.log('Twitter Username saved (development mode):', twitterUsername);
+      setTwitterSaved(true);
+      setTimeout(() => setTwitterSaved(false), 2000);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="bg-[#d9d9d9] relative w-[360px] h-[500px] flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
   return (
     <div className="bg-[#d9d9d9] relative w-[360px] h-[500px]">
       <div className="absolute contents left-[30px] top-[29px]">
-        <div className="absolute bg-white h-[21px] left-[283px] top-[61px] w-[34px]" />
         <p className="absolute font-inter font-normal leading-normal left-[30px] not-italic text-[15px] text-black text-nowrap top-[29px] whitespace-pre">
           Enter LLM API Key :
         </p>
-        <div className="absolute bg-[#fdfdfd] h-[25px] left-[30px] top-[59px] w-[245px]" />
-        <p className="absolute font-inter font-normal leading-normal left-[286px] not-italic text-[15px] text-black text-nowrap top-[64px] whitespace-pre">
-          Save
-        </p>
+        <input
+          type="password"
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+          className="absolute bg-[#fdfdfd] h-[25px] left-[30px] top-[59px] w-[245px] px-2 text-[12px] border border-gray-300 rounded"
+          placeholder="Enter your API key"
+        />
+        <button
+          onClick={handleSaveApiKey}
+          className={`absolute h-[21px] left-[283px] top-[61px] w-[34px] border border-gray-300 rounded text-[12px] cursor-pointer ${
+            apiKeySaved ? 'bg-green-200 text-green-800' : 'bg-white hover:bg-gray-100'
+          }`}
+        >
+          {apiKeySaved ? '✓' : 'Save'}
+        </button>
       </div>
 
       <div className="absolute contents left-[30px] top-[102px]">
-        <div className="absolute bg-white h-[21px] left-[283px] top-[134px] w-[34px]" />
         <p className="absolute font-inter font-normal leading-normal left-[30px] not-italic text-[15px] text-black text-nowrap top-[102px] whitespace-pre">
           Enter Twitter Username :
         </p>
-        <div className="absolute bg-[#fdfdfd] h-[25px] left-[30px] top-[132px] w-[245px]" />
-        <p className="absolute font-inter font-normal leading-normal left-[286px] not-italic text-[15px] text-black text-nowrap top-[137px] whitespace-pre">
-          Save
-        </p>
+        <input
+          type="text"
+          value={twitterUsername}
+          onChange={(e) => setTwitterUsername(e.target.value)}
+          className="absolute bg-[#fdfdfd] h-[25px] left-[30px] top-[132px] w-[245px] px-2 text-[12px] border border-gray-300 rounded"
+          placeholder="@username"
+        />
+        <button
+          onClick={handleSaveTwitterUsername}
+          className={`absolute h-[21px] left-[283px] top-[134px] w-[34px] border border-gray-300 rounded text-[12px] cursor-pointer ${
+            twitterSaved ? 'bg-green-200 text-green-800' : 'bg-white hover:bg-gray-100'
+          }`}
+        >
+          {twitterSaved ? '✓' : 'Save'}
+        </button>
       </div>
 
       <div className="absolute contents left-[30px] top-[175px]">

@@ -18,6 +18,6 @@
     "48": "icarus.png",
     "128": "icarus.png"
   },
-  "permissions": [],
+  "permissions": ["storage"],
   "host_permissions": []
 }
