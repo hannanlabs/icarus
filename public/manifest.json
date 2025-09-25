@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Icarus",
   "version": "0.0.1",
-  "description": "Icarus Chrome Extension",
+  "description": "Predict Your Next Tweet's Virality",
   "action": {
     "default_popup": "index.html",
     "default_icon": {
