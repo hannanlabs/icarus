@@ -2,31 +2,23 @@ import circleIcon from './assets/circle.svg';
 
 export default function App() {
   return (
-    <div className="w-[386px] h-[583px] bg-[#d9d9d9] relative">
-      <div className="flex flex-col items-center p-8">
-        <p className="font-inter text-[23px] font-normal text-black mb-8 text-center mt-8">
-          Welcome @hannanlabs
-        </p>
-
-        <div className="bg-[#ca3333] w-[318px] h-[64px] flex items-center justify-center mb-24">
-          <p className="font-inter text-[18px] font-normal text-black text-center">
-            Press to parse profile for input data
-          </p>
-        </div>
-
-        <div className="flex flex-col items-center mt-8">
-          <p className="font-inter text-[18px] font-normal text-black mb-8">
-            Tweet Viral Score :
-          </p>
-
-          <div className="relative w-[155px] h-[155px] flex items-center justify-center">
-            <img alt="" className="absolute w-full h-full" src={circleIcon} />
-            <p className="relative z-10 font-inter text-[18px] font-normal text-white">
-              79/100
-            </p>
-          </div>
-        </div>
+    <div className="bg-[#d9d9d9] relative w-[360px] h-[500px]">
+      <p className="absolute font-inter font-normal leading-normal left-[53px] not-italic text-[23px] text-black text-nowrap top-[73px] whitespace-pre">
+        Welcome @hannanlabs
+      </p>
+      <div className="absolute bg-[#ca3333] h-[64px] left-[21px] rounded-[39px] top-[147px] w-[318px]" />
+      <p className="absolute font-sans leading-normal left-[43px] not-italic text-[18px] text-nowrap text-white top-[168px] whitespace-pre">
+        Press to parse profile for input data
+      </p>
+      <p className="absolute font-inter font-normal leading-normal left-[97px] not-italic text-[18px] text-black text-nowrap top-[257px] whitespace-pre">
+        Tweet Viral Score :
+      </p>
+      <div className="absolute h-[153px] left-[102px] top-[314px] w-[155px]">
+        <img alt="" className="block max-w-none w-full h-full" src={circleIcon} />
       </div>
+      <p className="absolute font-inter font-normal leading-normal left-[147px] not-italic text-[18px] text-nowrap text-white top-[380px] whitespace-pre">
+        79/100
+      </p>
     </div>
   );
 }
