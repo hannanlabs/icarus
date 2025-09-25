@@ -19,8 +19,8 @@ export default function MetricsPage({ onGoBack }: { onGoBack: () => void }) {
         <p className="absolute font-inter font-normal leading-normal left-[126.5px] not-italic text-[18px] text-black text-center text-nowrap top-[69px] translate-x-[-50%] whitespace-pre">
           Engagement Likelihood
         </p>
-        <div className="absolute bg-white h-[33px] left-[35px] top-[103px] w-[282px]" />
-        <div className="absolute bg-[#ca3333] h-[33px] left-[27px] top-[103px]" style={{width: `${getProgressWidth(metrics.engagementLikelihood)}px`}} />
+        <div className="absolute bg-white h-[33px] left-[27px] top-[103px] w-[282px] border border-gray-300" />
+        <div className="absolute bg-[#ca3333] h-[31px] left-[28px] top-[104px]" style={{width: `${getProgressWidth(metrics.engagementLikelihood) - 2}px`}} />
         <p className="absolute font-inter text-[12px] text-black left-[320px] top-[110px]">{metrics.engagementLikelihood}%</p>
       </div>
 
@@ -28,8 +28,8 @@ export default function MetricsPage({ onGoBack }: { onGoBack: () => void }) {
         <p className="absolute font-inter font-normal leading-normal left-[123.5px] not-italic text-[18px] text-black text-center text-nowrap top-[155px] translate-x-[-50%] whitespace-pre">
           Conversation Potential
         </p>
-        <div className="absolute bg-white h-[33px] left-[27px] top-[188px] w-[282px]" />
-        <div className="absolute bg-[#ca3333] h-[33px] left-[27px] top-[188px]" style={{width: `${getProgressWidth(metrics.conversationPotential)}px`}} />
+        <div className="absolute bg-white h-[33px] left-[27px] top-[188px] w-[282px] border border-gray-300" />
+        <div className="absolute bg-[#ca3333] h-[31px] left-[28px] top-[189px]" style={{width: `${getProgressWidth(metrics.conversationPotential) - 2}px`}} />
         <p className="absolute font-inter text-[12px] text-black left-[320px] top-[195px]">{metrics.conversationPotential}%</p>
       </div>
 
@@ -37,8 +37,8 @@ export default function MetricsPage({ onGoBack }: { onGoBack: () => void }) {
         <p className="absolute font-inter font-normal leading-normal left-[121px] not-italic text-[18px] text-black text-center text-nowrap top-[240px] translate-x-[-50%] whitespace-pre">
           Out of Network Reach
         </p>
-        <div className="absolute bg-white h-[33px] left-[27px] top-[272px] w-[282px]" />
-        <div className="absolute bg-[#ca3333] h-[33px] left-[27px] top-[272px]" style={{width: `${getProgressWidth(metrics.outOfNetworkReach)}px`}} />
+        <div className="absolute bg-white h-[33px] left-[27px] top-[272px] w-[282px] border border-gray-300" />
+        <div className="absolute bg-[#ca3333] h-[31px] left-[28px] top-[273px]" style={{width: `${getProgressWidth(metrics.outOfNetworkReach) - 2}px`}} />
         <p className="absolute font-inter text-[12px] text-black left-[320px] top-[279px]">{metrics.outOfNetworkReach}%</p>
       </div>
 
@@ -46,8 +46,8 @@ export default function MetricsPage({ onGoBack }: { onGoBack: () => void }) {
         <p className="absolute font-inter font-normal leading-normal left-[132px] not-italic text-[18px] text-black text-center text-nowrap top-[324px] translate-x-[-50%] whitespace-pre">
           Content Quality & Safety
         </p>
-        <div className="absolute bg-white h-[33px] left-[27px] top-[358px] w-[282px]" />
-        <div className="absolute bg-[#ca3333] h-[33px] left-[27px] top-[358px]" style={{width: `${getProgressWidth(metrics.contentQuality)}px`}} />
+        <div className="absolute bg-white h-[33px] left-[27px] top-[358px] w-[282px] border border-gray-300" />
+        <div className="absolute bg-[#ca3333] h-[31px] left-[28px] top-[359px]" style={{width: `${getProgressWidth(metrics.contentQuality) - 2}px`}} />
         <p className="absolute font-inter text-[12px] text-black left-[320px] top-[365px]">{metrics.contentQuality}%</p>
       </div>
 
@@ -55,8 +55,8 @@ export default function MetricsPage({ onGoBack }: { onGoBack: () => void }) {
         <p className="absolute font-inter font-normal leading-normal left-[131.5px] not-italic text-[18px] text-black text-center text-nowrap top-[410px] translate-x-[-50%] whitespace-pre">
           Author Reputation Boost
         </p>
-        <div className="absolute bg-white h-[33px] left-[27px] top-[442px] w-[282px]" />
-        <div className="absolute bg-[#ca3333] h-[33px] left-[27px] top-[442px]" style={{width: `${getProgressWidth(metrics.authorReputation)}px`}} />
+        <div className="absolute bg-white h-[33px] left-[27px] top-[442px] w-[282px] border border-gray-300" />
+        <div className="absolute bg-[#ca3333] h-[31px] left-[28px] top-[443px]" style={{width: `${getProgressWidth(metrics.authorReputation) - 2}px`}} />
         <p className="absolute font-inter text-[12px] text-black left-[320px] top-[449px]">{metrics.authorReputation}%</p>
       </div>
 
