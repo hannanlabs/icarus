@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { backend } from './backend';
 
 export default function SettingsPage({ onGoBack }: { onGoBack: () => void }) {
   const [apiKey, setApiKey] = useState('');
@@ -8,45 +9,27 @@ export default function SettingsPage({ onGoBack }: { onGoBack: () => void }) {
   const [twitterSaved, setTwitterSaved] = useState(false);
 
   useEffect(() => {
-    // Load saved data when component mounts
-    if (typeof chrome !== 'undefined' && chrome.storage) {
-      chrome.storage.sync.get(['llmApiKey', 'twitterUsername'], (result) => {
-        setApiKey(result.llmApiKey || '');
-        setTwitterUsername(result.twitterUsername || '');
-        setIsLoading(false);
-      });
-    } else {
-      // Fallback for development mode when chrome APIs aren't available
-      console.log('Chrome storage not available (development mode)');
+    const loadSettings = async () => {
+      const settings = await backend.getSettings();
+      setApiKey(settings.llmApiKey);
+      setTwitterUsername(settings.twitterUsername);
       setIsLoading(false);
-    }
+    };
+
+    loadSettings();
   }, []);
 
-  const handleSaveApiKey = () => {
-    if (typeof chrome !== 'undefined' && chrome.storage) {
-      chrome.storage.sync.set({ llmApiKey: apiKey }, () => {
-        console.log('API Key saved');
-        setApiKeySaved(true);
-        setTimeout(() => setApiKeySaved(false), 2000);
-      });
-    } else {
-      // Fallback for development mode
-      console.log('API Key saved (development mode):', apiKey);
+  const handleSaveApiKey = async () => {
+    const success = await backend.saveApiKey(apiKey);
+    if (success) {
       setApiKeySaved(true);
       setTimeout(() => setApiKeySaved(false), 2000);
     }
   };
 
-  const handleSaveTwitterUsername = () => {
-    if (typeof chrome !== 'undefined' && chrome.storage) {
-      chrome.storage.sync.set({ twitterUsername: twitterUsername }, () => {
-        console.log('Twitter Username saved');
-        setTwitterSaved(true);
-        setTimeout(() => setTwitterSaved(false), 2000);
-      });
-    } else {
-      // Fallback for development mode
-      console.log('Twitter Username saved (development mode):', twitterUsername);
+  const handleSaveTwitterUsername = async () => {
+    const success = await backend.saveTwitterUsername(twitterUsername);
+    if (success) {
       setTwitterSaved(true);
       setTimeout(() => setTwitterSaved(false), 2000);
     }
