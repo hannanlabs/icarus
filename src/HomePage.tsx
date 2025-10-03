@@ -11,6 +11,7 @@ export default function HomePage({ onCircleClick, onSetupClick }: HomePageProps)
   const [settings, setSettings] = useState<UserSettings>({ llmApiKey: '', twitterUsername: '', twitterBearerToken: '' });
   const [isLoading, setIsLoading] = useState(true);
   const [score, setScore] = useState<number | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -31,21 +32,14 @@ export default function HomePage({ onCircleClick, onSetupClick }: HomePageProps)
   const hasTweet = tweetText.trim().length > 0;
   const canCalculate = hasTweet && hasApiKey && hasParsedTwitter;
 
-  const handleCalculate = () => {
-    const text = tweetText.trim();
-    let s = 40; 
-    const len = text.length;
-    if (len >= 40 && len <= 180) s += 15; else if (len < 20) s -= 5; else if (len > 240) s -= 10;
-    const hashtags = (text.match(/#/g) || []).length;
-    const mentions = (text.match(/@/g) || []).length;
-    const questions = (text.match(/\?/g) || []).length;
-    const emojis = (text.match(/\p{Emoji_Presentation}/gu) || []).length;
-    s += Math.min(hashtags * 4, 12);
-    s += Math.min(questions * 6, 12);
-    s += Math.min(emojis * 3, 9);
-    s -= Math.min(Math.max(mentions - 2, 0) * 2, 8);
-    s = Math.max(0, Math.min(100, Math.round(s)));
-    setScore(s);
+  const handleCalculate = async () => {
+    if (!canCalculate) return;
+    setIsCalculating(true);
+    const result = await backend.calculateViralityScore(tweetText.trim());
+    if (result) {
+      setScore(result.overallScore);
+    }
+    setIsCalculating(false);
   };
 
   if (isLoading) {
@@ -79,10 +73,10 @@ export default function HomePage({ onCircleClick, onSetupClick }: HomePageProps)
         )}
       </div>
 
-=      <div className="absolute left-0 top-[220px] w-full flex items-center justify-center">
+      <div className="absolute left-0 top-[220px] w-full flex items-center justify-center">
         <div className="cursor-pointer" onClick={onCircleClick}>
           <p className="font-inter font-extrabold text-[36px] text-black">
-            {score !== null ? `${score}/100` : '--/100'}
+            {isCalculating ? '...' : (score !== null ? `${score}/100` : '--/100')}
           </p>
         </div>
       </div>
@@ -98,8 +92,9 @@ export default function HomePage({ onCircleClick, onSetupClick }: HomePageProps)
         <button
           className="absolute left-[15px] top-[445px] w-[110px] h-[55px] bg-gradient-to-br from-[#ca3333] to-[#a62a2a] rounded-xl shadow-lg flex items-center justify-center cursor-pointer hover:scale-105 transition-all duration-200 hover:shadow-xl text-white font-inter font-bold text-[20px]"
           onClick={handleCalculate}
+          disabled={isCalculating}
         >
-          Calculate
+          {isCalculating ? '...' : 'Calculate'}
         </button>
       )}
     </div>

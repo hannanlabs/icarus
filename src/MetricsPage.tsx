@@ -1,11 +1,23 @@
+import { useEffect, useState } from 'react';
+import { backend, type ViralityMetrics } from './backend';
+
 export default function MetricsPage({ onGoBack }: { onGoBack: () => void }) {
-  const metrics = {
-    engagementLikelihood: 53,
-    conversationPotential: 78,
-    outOfNetworkReach: 32,
-    contentQuality: 69,
-    authorReputation: 83
-  };
+  const [metrics, setMetrics] = useState<ViralityMetrics>({
+    engagementLikelihood: 0,
+    conversationPotential: 0,
+    outOfNetworkReach: 0,
+    contentQuality: 0,
+    authorReputation: 0,
+    overallScore: 0,
+  });
+
+  useEffect(() => {
+    const load = async () => {
+      const m = await backend.getLatestMetrics();
+      if (m) setMetrics(m);
+    };
+    load();
+  }, []);
 
   const getProgressWidth = (percentage: number) => (percentage / 100) * 282;
 
