@@ -1,6 +1,19 @@
 export interface UserSettings {
   llmApiKey: string;
   twitterUsername: string;
+  twitterBearerToken: string;
+}
+
+export interface TwitterUserData {
+  id: string;
+  name: string;
+  username: string;
+  public_metrics: {
+    followers_count: number;
+    following_count: number;
+    tweet_count: number;
+    listed_count: number;
+  };
 }
 
 class BackendService {
@@ -11,15 +24,16 @@ class BackendService {
   async getSettings(): Promise<UserSettings> {
     if (this.isStorageAvailable()) {
       return new Promise((resolve) => {
-        chrome.storage.sync.get(['llmApiKey', 'twitterUsername'], (result) => {
+        chrome.storage.sync.get(['llmApiKey', 'twitterUsername', 'twitterBearerToken'], (result) => {
           resolve({
             llmApiKey: result.llmApiKey || '',
             twitterUsername: result.twitterUsername || '',
+            twitterBearerToken: result.twitterBearerToken || '',
           });
         });
       });
     } else {
-      return { llmApiKey: '', twitterUsername: '' };
+      return { llmApiKey: '', twitterUsername: '', twitterBearerToken: '' };
     }
   }
 
@@ -48,6 +62,42 @@ class BackendService {
     } else {
       console.log('Dev mode - Twitter username saved:', cleanUsername);
       return true;
+    }
+  }
+
+  async saveBearerToken(token: string): Promise<boolean> {
+    if (this.isStorageAvailable()) {
+      return new Promise((resolve) => {
+        chrome.storage.sync.set({ twitterBearerToken: token }, () => {
+          resolve(true);
+        });
+      });
+    } else {
+      console.log('Dev mode - Bearer token saved:', token);
+      return true;
+    }
+  }
+
+  async fetchTwitterUserData(username: string, bearerToken: string): Promise<TwitterUserData | null> {
+    try {
+      const cleanUsername = username.replace('@', '');
+
+      return new Promise((resolve) => {
+        chrome.runtime.sendMessage(
+          { action: 'fetchTwitterUser', username: cleanUsername, bearerToken },
+          (response) => {
+            if (response?.success) {
+              resolve(response.data);
+            } else {
+              console.error('Error:', response?.error);
+              resolve(null);
+            }
+          }
+        );
+      });
+    } catch (error) {
+      console.error('Error fetching Twitter data:', error);
+      return null;
     }
   }
 }

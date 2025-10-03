@@ -19,5 +19,8 @@
     "128": "icarus.png"
   },
   "permissions": ["storage"],
-  "host_permissions": []
+  "host_permissions": ["https://api.x.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  }
 }
