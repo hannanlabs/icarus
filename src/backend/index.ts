@@ -2,6 +2,7 @@ export interface UserSettings {
   llmApiKey: string;
   twitterUsername: string;
   twitterBearerToken: string;
+  cachedTwitterData?: TwitterUserData;
 }
 
 export interface TwitterUserData {
@@ -24,11 +25,12 @@ class BackendService {
   async getSettings(): Promise<UserSettings> {
     if (this.isStorageAvailable()) {
       return new Promise((resolve) => {
-        chrome.storage.sync.get(['llmApiKey', 'twitterUsername', 'twitterBearerToken'], (result) => {
+        chrome.storage.sync.get(['llmApiKey', 'twitterUsername', 'twitterBearerToken', 'cachedTwitterData'], (result) => {
           resolve({
             llmApiKey: result.llmApiKey || '',
             twitterUsername: result.twitterUsername || '',
             twitterBearerToken: result.twitterBearerToken || '',
+            cachedTwitterData: result.cachedTwitterData || undefined,
           });
         });
       });
@@ -85,8 +87,9 @@ class BackendService {
       return new Promise((resolve) => {
         chrome.runtime.sendMessage(
           { action: 'fetchTwitterUser', username: cleanUsername, bearerToken },
-          (response) => {
+          async (response) => {
             if (response?.success) {
+              await this.cacheTwitterData(response.data);
               resolve(response.data);
             } else {
               console.error('Error:', response?.error);
@@ -98,6 +101,19 @@ class BackendService {
     } catch (error) {
       console.error('Error fetching Twitter data:', error);
       return null;
+    }
+  }
+
+  async cacheTwitterData(data: TwitterUserData): Promise<boolean> {
+    if (this.isStorageAvailable()) {
+      return new Promise((resolve) => {
+        chrome.storage.sync.set({ cachedTwitterData: data }, () => {
+          resolve(true);
+        });
+      });
+    } else {
+      console.log('Dev mode - Twitter data cached:', data);
+      return true;
     }
   }
 }

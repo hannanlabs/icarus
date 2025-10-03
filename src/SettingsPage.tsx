@@ -19,6 +19,9 @@ export default function SettingsPage({ onGoBack }: { onGoBack: () => void }) {
       setApiKey(settings.llmApiKey);
       setTwitterUsername(settings.twitterUsername);
       setBearerToken(settings.twitterBearerToken);
+      if (settings.cachedTwitterData) {
+        setTwitterData(settings.cachedTwitterData);
+      }
       setIsLoading(false);
     };
 
