@@ -17,6 +17,15 @@ export interface TwitterUserData {
   };
 }
 
+export interface ViralityMetrics {
+  engagementLikelihood: number;
+  conversationPotential: number;
+  outOfNetworkReach: number;
+  contentQuality: number;
+  authorReputation: number;
+  overallScore: number;
+}
+
 class BackendService {
   private isStorageAvailable(): boolean {
     return typeof chrome !== 'undefined' && !!chrome.storage?.sync;
@@ -114,6 +123,54 @@ class BackendService {
     } else {
       console.log('Dev mode - Twitter data cached:', data);
       return true;
+    }
+  }
+
+  async calculateViralityScore(tweetText: string): Promise<ViralityMetrics | null> {
+    try {
+      return new Promise((resolve) => {
+        chrome.runtime.sendMessage(
+          { action: 'calculateViralityScore', tweetText },
+          async (response) => {
+            if (response?.success) {
+              const metrics = response.metrics as ViralityMetrics;
+              await this.saveLatestMetrics(metrics);
+              resolve(metrics);
+            } else {
+              console.error('OpenAI scoring error:', response?.error);
+              resolve(null);
+            }
+          }
+        );
+      });
+    } catch (error) {
+      console.error('Error calculating virality score:', error);
+      return null;
+    }
+  }
+
+  async saveLatestMetrics(metrics: ViralityMetrics): Promise<boolean> {
+    if (this.isStorageAvailable()) {
+      return new Promise((resolve) => {
+        chrome.storage.sync.set({ latestMetrics: metrics }, () => {
+          resolve(true);
+        });
+      });
+    } else {
+      console.log('Dev mode - Latest metrics saved:', metrics);
+      return true;
+    }
+  }
+
+  async getLatestMetrics(): Promise<ViralityMetrics | null> {
+    if (this.isStorageAvailable()) {
+      return new Promise((resolve) => {
+        chrome.storage.sync.get(['latestMetrics'], (result) => {
+          resolve(result.latestMetrics || null);
+        });
+      });
+    } else {
+      return null;
     }
   }
 }
