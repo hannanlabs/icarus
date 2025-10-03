@@ -173,6 +173,29 @@ class BackendService {
       return null;
     }
   }
+
+  async saveLastTweetText(text: string): Promise<boolean> {
+    if (this.isStorageAvailable()) {
+      return new Promise((resolve) => {
+        chrome.storage.sync.set({ lastTweetText: text }, () => resolve(true));
+      });
+    } else {
+      console.log('Dev mode - Last tweet text saved:', text);
+      return true;
+    }
+  }
+
+  async getLastTweetText(): Promise<string> {
+    if (this.isStorageAvailable()) {
+      return new Promise((resolve) => {
+        chrome.storage.sync.get(['lastTweetText'], (result) => {
+          resolve(result.lastTweetText || '');
+        });
+      });
+    } else {
+      return '';
+    }
+  }
 }
 
 export const backend = new BackendService();

@@ -15,8 +15,14 @@ export default function HomePage({ onCircleClick, onSetupClick }: HomePageProps)
 
   useEffect(() => {
     const load = async () => {
-      const s = await backend.getSettings();
+      const [s, lastText, lastMetrics] = await Promise.all([
+        backend.getSettings(),
+        backend.getLastTweetText(),
+        backend.getLatestMetrics(),
+      ]);
       setSettings(s);
+      if (lastText) setTweetText(lastText);
+      if (lastMetrics?.overallScore != null) setScore(lastMetrics.overallScore);
       setIsLoading(false);
     };
     load();
@@ -60,7 +66,11 @@ export default function HomePage({ onCircleClick, onSetupClick }: HomePageProps)
         <p className="font-inter text-[14px] text-black mb-1">Enter Tweet</p>
         <textarea
           value={tweetText}
-          onChange={(e) => setTweetText(e.target.value)}
+          onChange={async (e) => {
+            const v = e.target.value;
+            setTweetText(v);
+            await backend.saveLastTweetText(v);
+          }}
           placeholder="Paste your tweet here..."
           className="w-full h-[90px] bg-white border border-gray-300 rounded p-2 text-[12px] resize-none"
         />
