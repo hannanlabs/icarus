@@ -32,15 +32,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
 
       try {
-        const system = `You score a tweet's potential performance on Twitter using five metrics.
-Return only compact JSON with integer percentages (0-100) for:
-- engagementLikelihood
-- conversationPotential
-- outOfNetworkReach
-- contentQuality
-- authorReputation
-Include overallScore as an integer 0-100 summarizing the tweet.
-Do not include explanations.`;
+        const system = `You are an evaluator that scores a tweet's potential performance on Twitter/X using five metrics.
+Return ONLY compact JSON with integer percentages (0-100) for the fields below. Do not include any extra keys or text.
+
+Definitions and constraints:
+- engagementLikelihood: Probability in-network followers will like/retweet/reply based on the tweet content.
+- conversationPotential: Likelihood of replies and multi-turn discussion driven by the tweet.
+- outOfNetworkReach: Likelihood the tweet travels beyond followers via recommendations and interests.
+- contentQuality: Clarity, structure, hook strength, novelty, readability, and safety.
+- authorReputation: STABLE score derived ONLY from the provided author context (followers, following ratio, account age, historical engagement, posting consistency, verification/profile completeness if present). It MUST NOT depend on the current tweet text. If the author context is unchanged, this value must be identical across calls.
+
+Rules:
+- Output integers 0-100 for all fields.
+- If certain author fields are missing, assume neutral defaults consistently so the authorReputation remains stable.
+- Include overallScore (0-100) as a concise summary that can combine the above dimensions but MUST NOT change how authorReputation is computed.
+- Do not include explanations.`;
 
         const userContent = [
           'Score the following tweet using the five metrics and overallScore. Return JSON only.\n',
@@ -52,8 +58,34 @@ Do not include explanations.`;
 
         const body = {
           model: 'gpt-4o-mini',
-          response_format: { type: 'json_object' },
-          temperature: 0.2,
+          response_format: {
+            type: 'json_schema',
+            json_schema: {
+              name: 'ViralityMetrics',
+              strict: true,
+              schema: {
+                type: 'object',
+                additionalProperties: false,
+                properties: {
+                  engagementLikelihood: { type: 'integer', minimum: 0, maximum: 100 },
+                  conversationPotential: { type: 'integer', minimum: 0, maximum: 100 },
+                  outOfNetworkReach: { type: 'integer', minimum: 0, maximum: 100 },
+                  contentQuality: { type: 'integer', minimum: 0, maximum: 100 },
+                  authorReputation: { type: 'integer', minimum: 0, maximum: 100 },
+                  overallScore: { type: 'integer', minimum: 0, maximum: 100 }
+                },
+                required: [
+                  'engagementLikelihood',
+                  'conversationPotential',
+                  'outOfNetworkReach',
+                  'contentQuality',
+                  'authorReputation',
+                  'overallScore'
+                ]
+              }
+            }
+          },
+          temperature: 0,
           messages: [
             { role: 'system', content: system },
             { role: 'user', content: userContent }
