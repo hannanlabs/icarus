@@ -33,10 +33,9 @@ export default function HomePage({ onCircleClick, onSetupClick }: HomePageProps)
     return u ? `@${u}` : '';
   }, [settings.twitterUsername]);
 
-  const hasApiKey = !!settings.llmApiKey;
   const hasParsedTwitter = !!settings.cachedTwitterData;
   const hasTweet = tweetText.trim().length > 0;
-  const canCalculate = hasTweet && hasApiKey && hasParsedTwitter;
+  const canCalculate = hasTweet && hasParsedTwitter;
 
   const handleCalculate = async () => {
     if (!canCalculate) return;
@@ -77,7 +76,6 @@ export default function HomePage({ onCircleClick, onSetupClick }: HomePageProps)
         {!canCalculate && (
           <div className="text-[11px] text-gray-700 mt-1">
             {!hasTweet && <div>• Enter tweet text</div>}
-            {!hasApiKey && <div>• Add OpenAI API key in Setup</div>}
             {!hasParsedTwitter && <div>• Execute Twitter info in Setup</div>}
           </div>
         )}
