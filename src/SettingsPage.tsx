@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { backend, type TwitterUserData } from './backend';
+import { backend, type TwitterUserData } from './backend/storage';
 
 export default function SettingsPage({ onGoBack }: { onGoBack: () => void }) {
   const [twitterUsername, setTwitterUsername] = useState('');

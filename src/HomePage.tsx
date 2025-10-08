@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { backend, type UserSettings } from './backend';
+import { backend, type UserSettings } from './backend/storage';
 
 interface HomePageProps {
   onCircleClick: () => void;

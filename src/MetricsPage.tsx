@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { backend, type ViralityMetrics } from './backend';
+import { backend, type ViralityMetrics } from './backend/storage';
 
 export default function MetricsPage({ onGoBack }: { onGoBack: () => void }) {
   const [metrics, setMetrics] = useState<ViralityMetrics>({
