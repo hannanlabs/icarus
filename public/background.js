@@ -22,122 +22,37 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'calculateViralityScore') {
     const { tweetText } = request;
 
-    chrome.storage.sync.get(['llmApiKey', 'cachedTwitterData'], async (result) => {
-      const apiKey = result.llmApiKey;
+    chrome.storage.sync.get(['cachedTwitterData', 'useLocalLLM'], async (result) => {
       const userContext = result.cachedTwitterData;
-
-      if (!apiKey) {
-        sendResponse({ success: false, error: 'Missing OpenAI API key' });
-        return;
-      }
+      const useLocalLLM = result.useLocalLLM !== false;
 
       try {
-        const system = `You are an evaluator that scores a tweet's potential performance on Twitter/X using five metrics.
-Return ONLY compact JSON with integer percentages (0-100) for the fields below. Do not include any extra keys or text.
-
-Definitions and constraints:
-- engagementLikelihood: Probability in-network followers will like/retweet/reply based on the tweet content.
-- conversationPotential: Likelihood of replies and multi-turn discussion driven by the tweet.
-- outOfNetworkReach: Likelihood the tweet travels beyond followers via recommendations and interests.
-- contentQuality: Clarity, structure, hook strength, novelty, readability, and safety.
-- authorReputation: STABLE score derived ONLY from the provided author context (followers, following ratio, account age, historical engagement, posting consistency, verification/profile completeness if present). It MUST NOT depend on the current tweet text. If the author context is unchanged, this value must be identical across calls.
-
-Rules:
-- Output integers 0-100 for all fields.
-- If certain author fields are missing, assume neutral defaults consistently so the authorReputation remains stable.
-- Include overallScore (0-100) as a concise summary that can combine the above dimensions but MUST NOT change how authorReputation is computed.
-- Do not include explanations.`;
-
-        const userContent = [
-          'Score the following tweet using the five metrics and overallScore. Return JSON only.\n',
-          'Tweet:\n',
-          (tweetText || ''),
-          '\n\nAuthor context (JSON):\n',
-          JSON.stringify(userContext || {}, null, 2)
-        ].join('');
-
-        const body = {
-          model: 'gpt-4o-mini',
-          response_format: {
-            type: 'json_schema',
-            json_schema: {
-              name: 'ViralityMetrics',
-              strict: true,
-              schema: {
-                type: 'object',
-                additionalProperties: false,
-                properties: {
-                  engagementLikelihood: { type: 'integer', minimum: 0, maximum: 100 },
-                  conversationPotential: { type: 'integer', minimum: 0, maximum: 100 },
-                  outOfNetworkReach: { type: 'integer', minimum: 0, maximum: 100 },
-                  contentQuality: { type: 'integer', minimum: 0, maximum: 100 },
-                  authorReputation: { type: 'integer', minimum: 0, maximum: 100 },
-                  overallScore: { type: 'integer', minimum: 0, maximum: 100 }
-                },
-                required: [
-                  'engagementLikelihood',
-                  'conversationPotential',
-                  'outOfNetworkReach',
-                  'contentQuality',
-                  'authorReputation',
-                  'overallScore'
-                ]
-              }
-            }
-          },
-          temperature: 0,
-          messages: [
-            { role: 'system', content: system },
-            { role: 'user', content: userContent }
-          ]
-        };
-
-        const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        const resp = await fetch('http://localhost:5001/score', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
           },
-          body: JSON.stringify(body)
+          body: JSON.stringify({
+            tweetText: tweetText || '',
+            userContext: userContext || {}
+          })
         });
 
         if (!resp.ok) {
-          const errText = await resp.text().catch(() => 'OpenAI error');
-          sendResponse({ success: false, error: `OpenAI HTTP ${resp.status}: ${errText}` });
+          const errText = await resp.text().catch(() => 'Local LLM error');
+          sendResponse({ success: false, error: `Local LLM HTTP ${resp.status}: ${errText}` });
           return;
         }
 
         const data = await resp.json();
-        const content = data?.choices?.[0]?.message?.content || '';
 
-        let parsed;
-        try {
-          parsed = JSON.parse(content);
-        } catch (e) {
-          const match = content.match(/\{[\s\S]*\}/);
-          if (match) {
-            parsed = JSON.parse(match[0]);
-          }
+        if (data.success) {
+          sendResponse({ success: true, metrics: data.metrics });
+        } else {
+          sendResponse({ success: false, error: data.error || 'Unknown error from local LLM' });
         }
-
-        if (!parsed) {
-          sendResponse({ success: false, error: 'Failed to parse OpenAI response as JSON' });
-          return;
-        }
-
-        const clamp = (n) => Math.max(0, Math.min(100, Math.round(Number(n) || 0)));
-        const metrics = {
-          engagementLikelihood: clamp(parsed.engagementLikelihood),
-          conversationPotential: clamp(parsed.conversationPotential),
-          outOfNetworkReach: clamp(parsed.outOfNetworkReach),
-          contentQuality: clamp(parsed.contentQuality),
-          authorReputation: clamp(parsed.authorReputation),
-          overallScore: clamp(parsed.overallScore)
-        };
-
-        sendResponse({ success: true, metrics });
       } catch (error) {
-        sendResponse({ success: false, error: error?.message || 'Unexpected error' });
+        sendResponse({ success: false, error: `Failed to connect to local LLM server: ${error?.message || 'Unknown error'}. Make sure mlx_server.py is running on port 5000.` });
       }
     });
 
