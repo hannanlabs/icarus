@@ -1,6 +1,6 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
-  if (request.action === 'calculateViralityScore') {
+  if (request.type === 'engagement') {
     const { tweetText } = request;
 
     chrome.storage.sync.get(['userContext', 'cachedTwitterData', 'useLocalLLM'], async (result) => {
@@ -20,19 +20,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         if (!resp.ok) {
           const errText = await resp.text().catch(() => 'Local LLM error');
-          sendResponse({ success: false, error: `Local LLM HTTP ${resp.status}: ${errText}` });
+          sendResponse({ error: `Local LLM HTTP ${resp.status}: ${errText}` });
           return;
         }
 
         const data = await resp.json();
 
         if (data.success) {
-          sendResponse({ success: true, metrics: data.metrics });
+          sendResponse({ metrics: data.metrics });
         } else {
-          sendResponse({ success: false, error: data.error || 'Unknown error from local LLM' });
+          sendResponse({ error: data.error || 'Unknown error from local LLM' });
         }
       } catch (error) {
-        sendResponse({ success: false, error: `Failed to connect to local LLM server: ${error?.message || 'Unknown error'}. Make sure mlx_server.py is running on port 5000.` });
+        sendResponse({ error: `Failed to connect to local LLM server: ${error?.message || 'Unknown error'}. Make sure mlx_server.py is running on port 5000.` });
       }
     });
 

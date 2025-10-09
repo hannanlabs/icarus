@@ -41,10 +41,10 @@ def score_tweet():
 
         Required output format:
         {
-          "estimatedReplies": integer,
-          "estimatedReposts": integer,
-          "estimatedLikes": integer,
-          "estimatedViews": integer
+          "replies": integer,
+          "reposts": integer,
+          "likes": integer,
+          "views": integer
         }
 
         ANALYSIS FRAMEWORK - Use this internally to calculate estimates:
@@ -129,13 +129,13 @@ def score_tweet():
                 return max(0, int(round(float(n or 0))))
 
             metrics = {
-                'estimatedReplies': clamp_positive(parsed.get('estimatedReplies', 0)),
-                'estimatedReposts': clamp_positive(parsed.get('estimatedReposts', 0)),
-                'estimatedLikes': clamp_positive(parsed.get('estimatedLikes', 0)),
-                'estimatedViews': clamp_positive(parsed.get('estimatedViews', 0))
+                'replies': clamp_positive(parsed.get('replies', 0)),
+                'reposts': clamp_positive(parsed.get('reposts', 0)),
+                'likes': clamp_positive(parsed.get('likes', 0)),
+                'views': clamp_positive(parsed.get('views', 0))
             }
 
-            logger.info(f"Tweet scored - Views: {metrics['estimatedViews']}, Likes: {metrics['estimatedLikes']}")
+            logger.info(f"Tweet scored - Views: {metrics['views']}, Likes: {metrics['likes']}")
 
             return jsonify({'success': True, 'metrics': metrics})
 

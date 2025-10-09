@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { backend } from './backend/storage';
+import { backend } from './backend/storageSetting';
 
 export default function SettingsPage({ onGoBack }: { onGoBack: () => void }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -8,8 +8,8 @@ export default function SettingsPage({ onGoBack }: { onGoBack: () => void }) {
 
   useEffect(() => {
     const loadSettings = async () => {
-      const settings = await backend.getSettings();
-      setUserContext(settings.userContext);
+      const context = await backend.getSettings();
+      setUserContext(context);
       setIsLoading(false);
     };
 
@@ -17,7 +17,7 @@ export default function SettingsPage({ onGoBack }: { onGoBack: () => void }) {
   }, []);
 
   const handleSaveUserContext = async () => {
-    const success = await backend.saveUserContext(userContext);
+    const success = await backend.saveSettings(userContext);
     if (success) {
       setContextSaved(true);
       setTimeout(() => setContextSaved(false), 2000);

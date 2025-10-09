@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { backend, type UserSettings, type ViralityMetrics } from './backend/storage';
+import { backend, type metrics } from './backend/storageSetting';
 
 interface HomePageProps {
   onSetupClick: () => void;
@@ -7,19 +7,19 @@ interface HomePageProps {
 
 export default function HomePage({ onSetupClick }: HomePageProps) {
   const [tweetText, setTweetText] = useState('');
-  const [settings, setSettings] = useState<UserSettings>({ userContext: '' });
+  const [userContext, setUserContext] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isCalculating, setIsCalculating] = useState(false);
-  const [metrics, setMetrics] = useState<ViralityMetrics | null>(null);
+  const [metrics, setMetrics] = useState<metrics | null>(null);
 
   useEffect(() => {
     const load = async () => {
-      const [s, lastText, lastMetrics] = await Promise.all([
+      const [context, lastText, lastMetrics] = await Promise.all([
         backend.getSettings(),
-        backend.getLastTweetText(),
-        backend.getLatestMetrics(),
+        backend.getTweet(),
+        backend.getMetrics(),
       ]);
-      setSettings(s);
+      setUserContext(context);
       if (lastText) setTweetText(lastText);
       if (lastMetrics) {
         setMetrics(lastMetrics);
@@ -29,14 +29,14 @@ export default function HomePage({ onSetupClick }: HomePageProps) {
     load();
   }, []);
 
-  const hasUserContext = !!settings.userContext;
+  const hasUserContext = !!userContext;
   const hasTweet = tweetText.trim().length > 0;
   const canCalculate = hasTweet && hasUserContext;
 
   const handleCalculate = async () => {
     if (!canCalculate) return;
     setIsCalculating(true);
-    const result = await backend.calculateViralityScore(tweetText.trim());
+    const result = await backend.engagement(tweetText.trim());
     if (result) {
       setMetrics(result);
     }
@@ -60,7 +60,7 @@ export default function HomePage({ onSetupClick }: HomePageProps) {
           onChange={async (e) => {
             const v = e.target.value;
             setTweetText(v);
-            await backend.saveLastTweetText(v);
+            await backend.saveTweet(v);
           }}
           placeholder="Paste your tweet here..."
           className="w-full h-[90px] bg-white border border-gray-300 rounded p-2 text-[12px] resize-none"
@@ -80,22 +80,22 @@ export default function HomePage({ onSetupClick }: HomePageProps) {
 
             <div className="flex justify-between items-center">
               <span className="font-inter text-[12px] text-gray-700">Likes:</span>
-              <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedLikes?.toLocaleString() ?? '--'}</span>
+              <span className="font-inter font-bold text-[14px] text-black">{metrics.likes?.toLocaleString() ?? '--'}</span>
             </div>
 
             <div className="flex justify-between items-center">
               <span className="font-inter text-[12px] text-gray-700">Views:</span>
-              <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedViews?.toLocaleString() ?? '--'}</span>
+              <span className="font-inter font-bold text-[14px] text-black">{metrics.views?.toLocaleString() ?? '--'}</span>
             </div>
 
             <div className="flex justify-between items-center">
               <span className="font-inter text-[12px] text-gray-700">Replies:</span>
-              <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedReplies?.toLocaleString() ?? '--'}</span>
+              <span className="font-inter font-bold text-[14px] text-black">{metrics.replies?.toLocaleString() ?? '--'}</span>
             </div>
 
             <div className="flex justify-between items-center">
               <span className="font-inter text-[12px] text-gray-700">Reposts:</span>
-              <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedReposts?.toLocaleString() ?? '--'}</span>
+              <span className="font-inter font-bold text-[14px] text-black">{metrics.reposts?.toLocaleString() ?? '--'}</span>
             </div>
           </div>
         </div>
