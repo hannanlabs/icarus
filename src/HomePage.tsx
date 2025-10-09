@@ -79,16 +79,6 @@ export default function HomePage({ onSetupClick }: HomePageProps) {
             <p className="font-inter font-semibold text-[16px] text-black mb-3 text-center">Estimated Performance</p>
 
             <div className="flex justify-between items-center">
-              <span className="font-inter text-[12px] text-gray-700">Replies:</span>
-              <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedReplies?.toLocaleString() ?? '--'}</span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span className="font-inter text-[12px] text-gray-700">Reposts:</span>
-              <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedReposts?.toLocaleString() ?? '--'}</span>
-            </div>
-
-            <div className="flex justify-between items-center">
               <span className="font-inter text-[12px] text-gray-700">Likes:</span>
               <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedLikes?.toLocaleString() ?? '--'}</span>
             </div>
@@ -96,6 +86,16 @@ export default function HomePage({ onSetupClick }: HomePageProps) {
             <div className="flex justify-between items-center">
               <span className="font-inter text-[12px] text-gray-700">Views:</span>
               <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedViews?.toLocaleString() ?? '--'}</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="font-inter text-[12px] text-gray-700">Replies:</span>
+              <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedReplies?.toLocaleString() ?? '--'}</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="font-inter text-[12px] text-gray-700">Reposts:</span>
+              <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedReposts?.toLocaleString() ?? '--'}</span>
             </div>
           </div>
         </div>
