@@ -3,8 +3,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'engagement') {
     const { tweetText } = request;
 
-    chrome.storage.sync.get(['userContext', 'cachedTwitterData', 'useLocalLLM'], async (result) => {
-      const userContext = result.userContext || result.cachedTwitterData;
+    chrome.storage.sync.get(['userContext'], async (result) => {
+      const userContext = result.userContext;
 
       try {
         const resp = await fetch('http://localhost:5001/score', {
@@ -17,12 +17,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             userContext: userContext || {}
           })
         });
-
-        if (!resp.ok) {
-          const errText = await resp.text().catch(() => 'Local LLM error');
-          sendResponse({ error: `Local LLM HTTP ${resp.status}: ${errText}` });
-          return;
-        }
 
         const data = await resp.json();
 
