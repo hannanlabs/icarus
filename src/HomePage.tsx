@@ -1,17 +1,16 @@
-import { useEffect, useMemo, useState } from 'react';
-import { backend, type UserSettings } from './backend/storage';
+import { useEffect, useState } from 'react';
+import { backend, type UserSettings, type ViralityMetrics } from './backend/storage';
 
 interface HomePageProps {
-  onCircleClick: () => void;
   onSetupClick: () => void;
 }
 
-export default function HomePage({ onCircleClick, onSetupClick }: HomePageProps) {
+export default function HomePage({ onSetupClick }: HomePageProps) {
   const [tweetText, setTweetText] = useState('');
-  const [settings, setSettings] = useState<UserSettings>({ llmApiKey: '', twitterUsername: '', twitterBearerToken: '' });
+  const [settings, setSettings] = useState<UserSettings>({ userContext: '' });
   const [isLoading, setIsLoading] = useState(true);
-  const [score, setScore] = useState<number | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [metrics, setMetrics] = useState<ViralityMetrics | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -22,27 +21,24 @@ export default function HomePage({ onCircleClick, onSetupClick }: HomePageProps)
       ]);
       setSettings(s);
       if (lastText) setTweetText(lastText);
-      if (lastMetrics?.overallScore != null) setScore(lastMetrics.overallScore);
+      if (lastMetrics) {
+        setMetrics(lastMetrics);
+      }
       setIsLoading(false);
     };
     load();
   }, []);
 
-  const usernameLabel = useMemo(() => {
-    const u = settings.twitterUsername?.trim();
-    return u ? `@${u}` : '';
-  }, [settings.twitterUsername]);
-
-  const hasParsedTwitter = !!settings.cachedTwitterData;
+  const hasUserContext = !!settings.userContext;
   const hasTweet = tweetText.trim().length > 0;
-  const canCalculate = hasTweet && hasParsedTwitter;
+  const canCalculate = hasTweet && hasUserContext;
 
   const handleCalculate = async () => {
     if (!canCalculate) return;
     setIsCalculating(true);
     const result = await backend.calculateViralityScore(tweetText.trim());
     if (result) {
-      setScore(result.overallScore);
+      setMetrics(result);
     }
     setIsCalculating(false);
   };
@@ -58,7 +54,7 @@ export default function HomePage({ onCircleClick, onSetupClick }: HomePageProps)
   return (
     <div className="bg-[#d9d9d9] relative w-[360px] h-[500px]">
       <p className="absolute font-inknut-antiqua leading-normal left-[35px] not-italic text-[24px] text-black text-nowrap top-[20px] whitespace-pre">
-        Welcome {usernameLabel}
+        Welcome
       </p>
 
       <div className="absolute left-[30px] top-[60px] w-[300px]">
@@ -76,18 +72,38 @@ export default function HomePage({ onCircleClick, onSetupClick }: HomePageProps)
         {!canCalculate && (
           <div className="text-[11px] text-gray-700 mt-1">
             {!hasTweet && <div>• Enter tweet text</div>}
-            {!hasParsedTwitter && <div>• Execute Twitter info in Setup</div>}
+            {!hasUserContext && <div>• Add profile summary in Setup</div>}
           </div>
         )}
       </div>
 
-      <div className="absolute left-0 top-[220px] w-full flex items-center justify-center">
-        <div className="cursor-pointer" onClick={onCircleClick}>
-          <p className="font-inter font-extrabold text-[36px] text-black">
-            {isCalculating ? '...' : (score !== null ? `${score}/100` : '--/100')}
-          </p>
+      {metrics && (
+        <div className="absolute left-[30px] top-[200px] w-[300px]">
+          <div className="bg-white/50 rounded-lg p-4 space-y-3">
+            <p className="font-inter font-semibold text-[16px] text-black mb-3 text-center">Estimated Performance</p>
+
+            <div className="flex justify-between items-center">
+              <span className="font-inter text-[12px] text-gray-700">Replies:</span>
+              <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedReplies?.toLocaleString() ?? '--'}</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="font-inter text-[12px] text-gray-700">Reposts:</span>
+              <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedReposts?.toLocaleString() ?? '--'}</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="font-inter text-[12px] text-gray-700">Likes:</span>
+              <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedLikes?.toLocaleString() ?? '--'}</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="font-inter text-[12px] text-gray-700">Views:</span>
+              <span className="font-inter font-bold text-[14px] text-black">{metrics.estimatedViews?.toLocaleString() ?? '--'}</span>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       <div
         className="absolute left-[235px] top-[445px] w-[110px] h-[55px] bg-gradient-to-br from-gray-800 to-black rounded-xl shadow-lg flex items-center justify-center cursor-pointer hover:scale-105 transition-all duration-200 hover:shadow-xl"
