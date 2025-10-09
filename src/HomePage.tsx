@@ -53,10 +53,6 @@ export default function HomePage({ onSetupClick }: HomePageProps) {
 
   return (
     <div className="bg-[#d9d9d9] relative w-[360px] h-[500px]">
-      <p className="absolute font-inknut-antiqua leading-normal left-[35px] not-italic text-[24px] text-black text-nowrap top-[20px] whitespace-pre">
-        Welcome
-      </p>
-
       <div className="absolute left-[30px] top-[60px] w-[300px]">
         <p className="font-inter text-[14px] text-black mb-1">Enter Tweet</p>
         <textarea
