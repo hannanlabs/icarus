@@ -24,6 +24,6 @@
     "https://api.openai.com/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "backgroundEngagement.js"
   }
 }
