@@ -19,10 +19,6 @@
     "128": "icarus.png"
   },
   "permissions": ["storage"],
-  "host_permissions": [
-    "https://api.x.com/*",
-    "https://api.openai.com/*"
-  ],
   "background": {
     "service_worker": "backgroundEngagement.js"
   }
